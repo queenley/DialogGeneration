@@ -306,3 +306,5 @@ if __name__=="__main__":
 
     with open(args.save_path, "w",  encoding ='utf8') as f:
             json.dump(generated_dialog, f, ensure_ascii = False)
+
+    print(f"\nThe final dialog is saved to {args.save_path}")

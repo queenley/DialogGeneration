@@ -1,4 +1,5 @@
 import openai 
+import json
 from typing import List
 
 
@@ -89,7 +90,7 @@ class DialogGenerate:
 
         """
         self.messages.append({"role": "user", "content": message})
-        chat = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=self.messages)
+        chat = openai.ChatCompletion.create(model="gpt-3.5-turbo-16k", messages=self.messages)
         reply = chat.choices[0].message.content
         self.messages.append({"role": "assistant", "content": reply})  
 
@@ -111,14 +112,17 @@ class DialogGenerate:
                         """
         print("\n Generating dialog.....")
         self._dialog_generate(dialog_prompt)
+        
         print("\n Annotating action.....")
         self._dialog_generate(self.action_prompt)
+        
         print("\n Annotating slot.....")
         self._dialog_generate(self.slot_prompt)
+        
         print("\n Annotating intent.....")
-        final_dialog = self._dialog_generate(self.intent_prompt)
+        final_dialog = self._dialog_generate(self.intent_prompt)        
 
-        return final_dialog 
+        return json.loads(final_dialog)
 
 
     def generate_one_dialog(self) -> str:
