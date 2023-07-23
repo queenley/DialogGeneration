@@ -6,11 +6,12 @@ from src.dialog_generate import DialogGenerate
 def make_parser():
     parser = argparse.ArgumentParser("Dialog Generation", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     
-    parser.add_argument("--key", type=str, required=True)
-    parser.add_argument("--domain", type=str, default="Beauty Spa")
-    parser.add_argument("--domain_type", type=str, default="service")
-    parser.add_argument("--product", type=str, default="haircut")
-    parser.add_argument("--example", type=list, default=["USER: Hello and good morning. Could you kindly assist me in purchasing a laptop?", "AGENT: Hello and good morning. I am here to help you. Do you have any specification requirements?", 
+    parser.add_argument("--key", type=str, required=True, help="the private key of ChatGPT API")
+    parser.add_argument("--domain", type=str, default="Beauty Spa", help="the domain of dialog")
+    parser.add_argument("--domain_type", type=str, default="service", help="the domain type of dialog. (service, trading, ...)")
+    parser.add_argument("--product", type=str, default="haircut", help="the product of dialog")
+    parser.add_argument("--example", type=list, help="the example dialog",
+                        default=["USER: Hello and good morning. Could you kindly assist me in purchasing a laptop?", "AGENT: Hello and good morning. I am here to help you. Do you have any specification requirements?", 
                                                         "USER: I'm looking for a cheap i7 cpu.", "AGENT: Do you have any brand preferences?", 
                                                         "USER: I used a HP laptop earlier. It was quite nice.", "AGENT: How much are you willing to spend?", 
                                                         "USER: I am just a normal user. I would not spend more than 2400.", "AGENT: I have a HP laptop that matches your requirement. It is HP 15-da0035nx, which costs 2299.", 
@@ -28,9 +29,15 @@ def make_parser():
                                                         "USER: No. I cannot afford it. I will just take the laptop.", "AGENT: Can I show you some cheap Blackberry phones?", 
                                                         "USER: No, I will buy it next time.", "AGENT: Alright. Your laptop has been booked. Is there anything else I could asist you with?", 
                                                         "USER: No, Thankyou for assistance.", "AGENT: You are welcome."])
-    parser.add_argument("--user_action", type=list, default=["INFORM", "REQUEST", "SELECT", "CONFIRM", "REQUEST-ALTS", "BYE", "GREET", "BOOK", "NOBOOK", "OFFERBOOK", "ASK", "INFORM-INTENT", "NEGATE-INTENT", "AFFIRM-INTENT", "AFFIRM", "NEGATE", "THANK"])
-    parser.add_argument("--system_action", type=list, default=["INFORM", "REQUEST", "SELECT", "CONFIRM", "OFFER", "NoOFFER", "RECOMMEND", "PROMOTION_INTRODUCTION", "NOTIFY_SUCCESS", "NOTIFY_FALIURE", "INFORM_COUNT", "OFFER_INTENT", "REQMORE", "BYE", "GREET", "OFFERBOOK", "OFFERBOOKED", "ASK", "DELIVERY_SUPPORT", "SKILL_INTRODUCTION", "SCHEDULE_RECOMMEND", "THANK"])
-    parser.add_argument("--slot", type=list, default=[
+    parser.add_argument("--user_action", type=list, 
+                        help="the list of user actions",
+                        default=["INFORM", "REQUEST", "SELECT", "CONFIRM", "REQUEST-ALTS", "BYE", "GREET", "BOOK", "NOBOOK", "OFFERBOOK", "ASK", "INFORM-INTENT", "NEGATE-INTENT", "AFFIRM-INTENT", "AFFIRM", "NEGATE", "THANK"])
+    parser.add_argument("--system_action", type=list, 
+                        help="the list of system actions",
+                        default=["INFORM", "REQUEST", "SELECT", "CONFIRM", "OFFER", "NoOFFER", "RECOMMEND", "PROMOTION_INTRODUCTION", "NOTIFY_SUCCESS", "NOTIFY_FALIURE", "INFORM_COUNT", "OFFER_INTENT", "REQMORE", "BYE", "GREET", "OFFERBOOK", "OFFERBOOKED", "ASK", "DELIVERY_SUPPORT", "SKILL_INTRODUCTION", "SCHEDULE_RECOMMEND", "THANK"])
+    parser.add_argument("--slot", type=list, 
+                        help="the list of dictionaries with slot_name key and slot_value value",
+                        default=[
                                                         {
                                                             "name": "service_type",
                                                             "description": "The type of beauty service",
@@ -135,7 +142,9 @@ def make_parser():
                                                             "is_categorical": False
                                                         }
                                                     ])
-    parser.add_argument("--intent", type=list, default=[
+    parser.add_argument("--intent", type=list, 
+                        help="the list of dictionaries with intents information (intent_name, intent_description, intent_required_slots)",
+                        default=[
                                                             {
                                                                 "name": "book_appointment",
                                                                 "description": "Book an appointment for a beauty service",
@@ -238,10 +247,12 @@ def make_parser():
                                                             }
                                                         ])
 
-    parser.add_argument("--num_dialog", type=int, default=1)
+    parser.add_argument("--num_dialog", type=int, help="the number of dialogs",            
+                        default=1)
     parser.add_argument("--list_product", type=list, default=[])
     
-    parser.add_argument("--save_path", type=str, default="dialog.json")
+    parser.add_argument("--save_path", type=str, help="the save path (.json)", 
+                        default="dialog.json")
 
     return parser
 
