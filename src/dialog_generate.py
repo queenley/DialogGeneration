@@ -61,13 +61,7 @@ class DialogGenerate:
         self.slots = slots
         self.intents = intents
         self.list_product = list_product
-
-        self.dialog_prompt = f"""
-                                Task: Generate a new dialogue between USER and AGENT which AGENT is a seller bot in a {self.domain}. 
-                                Requirement:  AGENT need to orient USER so that the trading success (USER agrees to participate in {self.domain} {self.domain_type}). {self.domain} {self.domain_type} in this case is {self.product}.
-                                Format: .json code block
-                                Example: {self.example}
-                            """   
+           
         self.action_prompt = f"""
                                 Now, you need to annotate each message of that dialogue by 
                                 - Adding key "action" of USER'S MESSAGE which is taked in this list: {usract}
@@ -102,16 +96,48 @@ class DialogGenerate:
         return reply  
 
 
-    def generate_dialog(self) -> str:
+    def _generate_dialog(self, product) -> str:
         """
         Generate dialog with ChatGPT 3.5 API
             Returns:
                 final_dialog (str): an annotated dialog 
 
         """
-        self.dialog_generate(self.dialog_prompt)
+        dialog_prompt = f"""
+                            Task: Generate a new dialogue between USER and AGENT which AGENT is a seller bot in a {self.domain}. 
+                            Requirement:  AGENT need to orient USER so that the trading success (USER agrees to participate in {self.domain} {self.domain_type}). {self.domain} {self.domain_type} in this case is {product}.
+                            Format: .json code block
+                            Example: {self.example}
+                        """
+        self.dialog_generate(dialog_prompt)
         self.dialog_generate(self.action_prompt)
         self.dialog_generate(self.slot_prompt)
         final_dialog = self.dialog_generate(self.intent_prompt)
 
         return final_dialog 
+
+
+    def generate_one_dialog(self) -> str:
+        """
+        Generate one dialog with ChatGPT 3.5 API
+            Returns:
+                an annotated dialog 
+
+        """
+        return self._generate_dialog(self.product)
+
+
+    def generate_multi_dialog(self) -> List: 
+        """
+        Generate multiple dialog with ChatGPT 3.5 API
+            Returns:
+                list_dialog (list): a list of annotated dialog 
+
+        """
+        list_dialog = []
+        for product in self.list_product:
+            list_dialog.append(self.generate_dialog(product))
+            self.messages=[{"role": "system", "content": "You are a intelligent assistant."}]
+
+        return list_dialog
+    

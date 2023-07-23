@@ -10,7 +10,7 @@ def make_parser():
     parser.add_argument("--domain", type=str, default="Beauty Spa", help="the domain of dialog")
     parser.add_argument("--domain_type", type=str, default="service", help="the domain type of dialog. (service, trading, ...)")
     parser.add_argument("--product", type=str, default="haircut", help="the product of dialog")
-    parser.add_argument("--example", type=list, help="the example dialog",
+    parser.add_argument("--example", help="the example dialog",
                         default=["USER: Hello and good morning. Could you kindly assist me in purchasing a laptop?", "AGENT: Hello and good morning. I am here to help you. Do you have any specification requirements?", 
                                                         "USER: I'm looking for a cheap i7 cpu.", "AGENT: Do you have any brand preferences?", 
                                                         "USER: I used a HP laptop earlier. It was quite nice.", "AGENT: How much are you willing to spend?", 
@@ -35,8 +35,8 @@ def make_parser():
     parser.add_argument("--system_action", type=list, 
                         help="the list of system actions",
                         default=["INFORM", "REQUEST", "SELECT", "CONFIRM", "OFFER", "NoOFFER", "RECOMMEND", "PROMOTION_INTRODUCTION", "NOTIFY_SUCCESS", "NOTIFY_FALIURE", "INFORM_COUNT", "OFFER_INTENT", "REQMORE", "BYE", "GREET", "OFFERBOOK", "OFFERBOOKED", "ASK", "DELIVERY_SUPPORT", "SKILL_INTRODUCTION", "SCHEDULE_RECOMMEND", "THANK"])
-    parser.add_argument("--slot", type=list, 
-                        help="the list of dictionaries with slot_name key and slot_value value",
+    parser.add_argument("--slot", 
+                        help="the list of dictionaries with slot_name key and slot_value value (or the text file)",
                         default=[
                                                         {
                                                             "name": "service_type",
@@ -142,8 +142,8 @@ def make_parser():
                                                             "is_categorical": False
                                                         }
                                                     ])
-    parser.add_argument("--intent", type=list, 
-                        help="the list of dictionaries with intents information (intent_name, intent_description, intent_required_slots)",
+    parser.add_argument("--intent", 
+                        help="the list of dictionaries with intents information (intent_name, intent_description, intent_required_slots) (or the text file)",
                         default=[
                                                             {
                                                                 "name": "book_appointment",
@@ -258,38 +258,25 @@ def make_parser():
 
 
 if __name__=="__main__":
-    args = make_parser().parse_args()    
-    
-    if args.num_dialog == 1:
-        dialog_generation = DialogGenerate(
-                                args.key,
-                                args.domain,
-                                args.domain_type,
-                                args.product, 
-                                args.example,
-                                args.user_action,
-                                args.system_action,
-                                args.slot,
-                                args.intent
-                            )
-        
-        generated_dialog = dialog_generation.generate_dialog()    
+    args = make_parser().parse_args()        
 
+    dialog_generation = DialogGenerate(
+                        args.key,
+                        args.domain,
+                        args.domain_type,
+                        args.product, 
+                        args.example,
+                        args.user_action,
+                        args.system_action,
+                        args.slot,
+                        args.intent,
+                        args.list_product
+                    )
+    
+    if args.num_dialog == 1:        
+        generated_dialog = dialog_generation.generate_dialog()    
     elif args.num_dialog == len(args.list_product): 
-        generated_dialog = [] 
-        for product in args.list_product:
-            dialog_generation = DialogGenerate(
-                                    args.key,
-                                    args.domain,
-                                    args.domain_type,
-                                    product, 
-                                    args.example,
-                                    args.user_action,
-                                    args.system_action,
-                                    args.slot,
-                                    args.intent
-                                )
-            generated_dialog.append(dialog_generation.generate_dialog())
+        generated_dialog = dialog_generation.generate_multi_dialog()              
 
     with open(args.save_path, "w",  encoding ='utf8') as f:
             json.dump(generated_dialog, f, ensure_ascii = False)
