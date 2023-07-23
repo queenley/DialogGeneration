@@ -109,10 +109,14 @@ class DialogGenerate:
                             Format: .json code block
                             Example: {self.example}
                         """
-        self.dialog_generate(dialog_prompt)
-        self.dialog_generate(self.action_prompt)
-        self.dialog_generate(self.slot_prompt)
-        final_dialog = self.dialog_generate(self.intent_prompt)
+        print("\n Generating dialog.....")
+        self._dialog_generate(dialog_prompt)
+        print("\n Annotating action.....")
+        self._dialog_generate(self.action_prompt)
+        print("\n Annotating slot.....")
+        self._dialog_generate(self.slot_prompt)
+        print("\n Annotating intent.....")
+        final_dialog = self._dialog_generate(self.intent_prompt)
 
         return final_dialog 
 
@@ -135,7 +139,8 @@ class DialogGenerate:
 
         """
         list_dialog = []
-        for product in self.list_product:
+        for idx, product in enumerate(self.list_product):
+            print(f"\n Generating dialog {idx}.....")
             list_dialog.append(self.generate_dialog(product))
             self.messages=[{"role": "system", "content": "You are a intelligent assistant."}]
 

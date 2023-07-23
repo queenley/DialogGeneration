@@ -259,7 +259,31 @@ def make_parser():
 
 if __name__=="__main__":
     args = make_parser().parse_args()        
+     
+    args_slot = args.slot
+    args_intent = args.intent
 
+    # Check slot information are a list or a text
+    if isinstance(args_slot, str):
+        try:
+            with open(args_slot) as f:
+                slots = f.readlines()
+        except:
+            print("Be sure the text file correctly")
+    else:
+         slots = args_slot
+
+    # Check intent information are a list or a text
+    if isinstance(args_intent, str):
+        try:
+            with open(args_intent) as f:
+                intents = f.readlines()
+        except:
+            print("Be sure the text file correctly")
+    else:
+         intents = args_intent         
+             
+    # Call DialogGenerate object
     dialog_generation = DialogGenerate(
                         args.key,
                         args.domain,
@@ -268,15 +292,17 @@ if __name__=="__main__":
                         args.example,
                         args.user_action,
                         args.system_action,
-                        args.slot,
-                        args.intent,
+                        slots,
+                        intents,
                         args.list_product
                     )
-    
-    if args.num_dialog == 1:        
-        generated_dialog = dialog_generation.generate_dialog()    
-    elif args.num_dialog == len(args.list_product): 
-        generated_dialog = dialog_generation.generate_multi_dialog()              
+        
+    # Generate multiple dialog
+    if args.num_dialog == len(args.list_product): 
+        generated_dialog = dialog_generation.generate_multi_dialog()                   
+    # Generate one dialog
+    else:     
+        generated_dialog = dialog_generation.generate_one_dialog()    
 
     with open(args.save_path, "w",  encoding ='utf8') as f:
             json.dump(generated_dialog, f, ensure_ascii = False)
